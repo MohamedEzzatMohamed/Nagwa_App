@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_navigation"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/material_list_destination">
+
+    <fragment
+        android:id="@+id/material_list_destination"
+        android:name="com.example.nagwaapp.ui.fragments.MaterialListFragment"
+        android:label="material_list_fragment"
+        tools:layout="@layout/fragment_material_list">
+        <action
+            android:id="@+id/action_list_to_details"
+            app:destination="@id/details_material_destination"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/details_material_destination"
+        android:name="com.example.nagwaapp.ui.fragments.DetailsMaterialFragment"
+        android:label="details_material_destination"
+        tools:layout="@layout/fragment_details_material">
+        <action
+            android:id="@+id/action_details_to_list"
+            app:destination="@id/material_list_destination" />
+    </fragment>
+</navigation>
