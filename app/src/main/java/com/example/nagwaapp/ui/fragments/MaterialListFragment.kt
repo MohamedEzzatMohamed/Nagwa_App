@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.nagwaapp.R
 import com.example.nagwaapp.adapter.MaterialListAdapter
@@ -41,6 +43,8 @@ class MaterialListFragment : Fragment(), OnItemClicked {
         // Giving the binding access to the OverviewViewModel
         binding.viewModel = viewModel
 
+        setMaterialRecyclerView()
+
         viewModel.status.observe(viewLifecycleOwner, { status ->
             when(status){
                 "loading" -> {
@@ -53,14 +57,16 @@ class MaterialListFragment : Fragment(), OnItemClicked {
                     binding.errorMessageTextView.visibility = View.VISIBLE
                     binding.loadingProgressBar.visibility = View.INVISIBLE
                 }
-                "Done" -> {
+                "done" -> {
+                    setupObserver()
                     binding.matieralListRecyclerView.visibility = View.VISIBLE
                     binding.errorMessageTextView.visibility = View.INVISIBLE
                     binding.loadingProgressBar.visibility = View.INVISIBLE
-                    setupObserver()
                 }
             }
         })
+
+
         viewModel.getMaterialList()
 
         return binding.root
@@ -70,21 +76,37 @@ class MaterialListFragment : Fragment(), OnItemClicked {
     private fun setupObserver(){
         viewModel.materialList.observe(viewLifecycleOwner, { materialList ->
             if (materialList != null) {
-                setMaterialRecyclerView(materialList)
-
+                retrieveMaterialList(materialList)
             }
         })
     }
 
-    //set the main parameters for the recyclerView with the adapter and data
-    private fun setMaterialRecyclerView(materialList: ArrayList<Material>) {
+    //set the main parameters for the recyclerView with the adapter
+    private fun setMaterialRecyclerView() {
         binding.matieralListRecyclerView.layoutManager = LinearLayoutManager(context)
-        materialsListAdapter = MaterialListAdapter(materialList, this)
+        materialsListAdapter = MaterialListAdapter(arrayListOf(), this)
+        binding.matieralListRecyclerView.addItemDecoration(
+            DividerItemDecoration(
+                binding.matieralListRecyclerView.context,
+                (binding.matieralListRecyclerView.layoutManager as LinearLayoutManager).orientation
+            )
+        )
         binding.matieralListRecyclerView.adapter = materialsListAdapter
+    }
+
+    //get the material list from ViewModel
+    private fun retrieveMaterialList(materialModel: ArrayList<Material>) {
+        materialsListAdapter.apply {
+            addMaterial(materialModel)
+            notifyDataSetChanged()
+        }
     }
 
     //item click to go for details activity
     override fun onItemClick(material: Material) {
         Log.d(TAG, "onItemClick: $material")
+        this.findNavController().navigate(
+            MaterialListFragmentDirections
+                .actionListToDetails(material))
     }
 }

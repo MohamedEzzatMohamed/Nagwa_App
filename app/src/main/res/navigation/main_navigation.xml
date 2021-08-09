@@ -23,5 +23,8 @@
         <action
             android:id="@+id/action_details_to_list"
             app:destination="@id/material_list_destination" />
+        <argument
+            android:name="materialItem"
+            app:argType="com.example.nagwaapp.models.Material" />
     </fragment>
 </navigation>

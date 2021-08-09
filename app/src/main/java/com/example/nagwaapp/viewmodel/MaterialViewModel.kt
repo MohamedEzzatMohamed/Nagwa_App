@@ -1,5 +1,6 @@
 package com.example.nagwaapp.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,14 +14,10 @@ import java.lang.Exception
 
 class MaterialViewModel : ViewModel() {
 
-    private val materialsListLiveData = MutableLiveData<ArrayList<Material>>()
-    public val materialList: LiveData<ArrayList<Material>>
-        get() = materialsListLiveData
-
-    //check if the requests is success
-    private var _isSuccess = MutableLiveData<Boolean>()
-    val isSuccess: LiveData<Boolean>
-        get() = _isSuccess
+    private val TAG : String = MaterialViewModel::class.java.simpleName
+    private val _materialList = MutableLiveData<ArrayList<Material>>()
+    val materialList: LiveData<ArrayList<Material>>
+        get() = _materialList
 
     val _status = MutableLiveData<String>()
     val status: LiveData<String>
@@ -28,18 +25,26 @@ class MaterialViewModel : ViewModel() {
 
     init {
         _status.value = "loading"
+        _materialList.value = ArrayList()
     }
 
     fun getMaterialList(){
+        _status.value = "loading"
+//        var innerList: ArrayList<Material>
         viewModelScope.launch {
             try {
                 val response = withContext(Dispatchers.IO) {
-                    materialsListLiveData.value = RetrofitClass.apiInterface.getMaterial()
+                    RetrofitClass.apiInterface.getMaterial()
                 }
+                Log.d(TAG, "getMaterialList: ${response.body()!!.get(0).status.toString()}")
+                _status.value = "done"
+                _materialList.postValue(response.body())
 
             } catch (error: Exception) {
-
+                Log.d(TAG, "getMaterialList: $error")
+                _status.value = "failed"
             }
         }
     }
+
 }
