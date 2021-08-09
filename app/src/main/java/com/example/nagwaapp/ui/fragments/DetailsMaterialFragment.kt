@@ -1,32 +1,21 @@
 package com.example.nagwaapp.ui.fragments
 
-import android.annotation.SuppressLint
-import android.media.session.MediaController
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.example.nagwaapp.R
 import com.example.nagwaapp.databinding.FragmentDetailsMaterialBinding
-import com.example.nagwaapp.databinding.FragmentMaterialListBinding
 import com.example.nagwaapp.models.Material
+import com.example.nagwaapp.utils.Constant
 import com.example.nagwaapp.viewmodel.DetailsViewModel
-import com.example.nagwaapp.viewmodel.MaterialViewModel
 
-//import dagger.hilt.android.AndroidEntryPoint
 
-//@AndroidEntryPoint
 class DetailsMaterialFragment : Fragment() {
-
-    private val TAG: String = DetailsMaterialFragment::class.java.simpleName
 
     private lateinit var arguments : Material
 
@@ -48,20 +37,23 @@ class DetailsMaterialFragment : Fragment() {
         )
         binding.lifecycleOwner = this
         arguments = DetailsMaterialFragmentArgs.fromBundle(requireArguments()).materialItem
-        Log.d(TAG, "onCreateView: $arguments")
         viewModel.setMaterialDetails(arguments)
         // Giving the binding access to the OverviewViewModel
         binding.viewModel = viewModel
         return binding.root
     }
 
-    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        var url: String
         viewModel.materialLiveData.observe(viewLifecycleOwner, {  material ->
             binding.materialDetailNameTextView.text = material.name
-            binding.materialWebView.loadUrl(material.url)
+            if(material.type == "PDF")
+                url = Constant.PDF_READER_URL + material.url
+            else
+                url = material.url
+            binding.materialWebView.loadUrl(url)
         })
 
         viewModel.timerStart.observe(viewLifecycleOwner, {
@@ -72,9 +64,9 @@ class DetailsMaterialFragment : Fragment() {
             }
         })
 
-        viewModel.counter.observe(viewLifecycleOwner, {
-            binding.progressHorizontalProgressBar.progress = it.toInt()
-            binding.percentageTextView.text = "$it%"
+        viewModel.counter.observe(viewLifecycleOwner, { percentage ->
+            binding.progressHorizontalProgressBar.progress = percentage
+            binding.percentageTextView.text = getString(R.string.loading_percentage, percentage)
         })
 
         viewModel.materialStatus.observe(viewLifecycleOwner, {  status ->

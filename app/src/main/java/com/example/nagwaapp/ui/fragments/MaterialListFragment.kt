@@ -18,10 +18,7 @@ import com.example.nagwaapp.interfaces.OnItemClicked
 import com.example.nagwaapp.models.Material
 import com.example.nagwaapp.viewmodel.MaterialViewModel
 
-//@AndroidEntryPoint
 class MaterialListFragment : Fragment(), OnItemClicked {
-
-    private val TAG : String = MaterialListFragment::class.java.simpleName
 
     private lateinit var binding : FragmentMaterialListBinding
     // This property is only valid between onCreateView and
@@ -104,7 +101,6 @@ class MaterialListFragment : Fragment(), OnItemClicked {
 
     //item click to go for details activity
     override fun onItemClick(material: Material) {
-        Log.d(TAG, "onItemClick: $material")
         this.findNavController().navigate(
             MaterialListFragmentDirections
                 .actionListToDetails(material))
