@@ -3,4 +3,5 @@
     <string name="error_message">Connection Failed!</string>
     <string name="material_status">Material status</string>
     <string name="material_type">Material type</string>
+    <string name="loading_percentage">%d%%</string>
 </resources>
