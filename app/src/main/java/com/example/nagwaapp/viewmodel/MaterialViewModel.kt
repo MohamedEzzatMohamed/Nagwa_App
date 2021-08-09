@@ -14,7 +14,6 @@ import java.lang.Exception
 
 class MaterialViewModel : ViewModel() {
 
-    private val TAG : String = MaterialViewModel::class.java.simpleName
     private val _materialList = MutableLiveData<ArrayList<Material>>()
     val materialList: LiveData<ArrayList<Material>>
         get() = _materialList
@@ -36,12 +35,10 @@ class MaterialViewModel : ViewModel() {
                 val response = withContext(Dispatchers.IO) {
                     RetrofitClass.apiInterface.getMaterial()
                 }
-                Log.d(TAG, "getMaterialList: ${response.body()!!.get(0).status.toString()}")
                 _status.value = "done"
                 _materialList.postValue(response.body())
 
             } catch (error: Exception) {
-                Log.d(TAG, "getMaterialList: $error")
                 _status.value = "failed"
             }
         }

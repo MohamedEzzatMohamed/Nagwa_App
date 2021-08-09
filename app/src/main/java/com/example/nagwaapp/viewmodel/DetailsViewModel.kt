@@ -1,7 +1,6 @@
 package com.example.nagwaapp.viewmodel
 
 import android.os.CountDownTimer
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,8 +9,6 @@ import com.example.nagwaapp.utils.Constant.ONE_SECOND
 import com.example.nagwaapp.utils.Constant.TWENTY_SECOND
 
 class DetailsViewModel : ViewModel() {
-
-    private val TAG: String = DetailsViewModel::class.java.simpleName
 
     private val _materialLiveData = MutableLiveData<Material>()
     val materialLiveData: LiveData<Material>
@@ -42,32 +39,31 @@ class DetailsViewModel : ViewModel() {
 
     fun setMaterialDetails(material: Material) {
         _materialLiveData.value = material
-        Log.d(TAG, "setMaterialDetails: ${(material.status == "null")}")
+        enhanceURL()
+    }
+
+    private fun enhanceURL(){
+        if(materialLiveData.value!!.url[0]!='h')
+            _materialLiveData.value!!.url.drop(1)
     }
 
     fun downloadMaterial() {
-
         if (materialStatus.value == "ready") {
             _materialStatus.value = "downloading"
             _materialLiveData.value!!.status = "downloading"
-            Log.d(TAG, "downloadMaterial: ${_materialLiveData.value!!.status}")
             startTimer(TWENTY_SECOND)
         }
     }
 
-
     // a timer function for fake download
-
     private fun startTimer(minutes: Long) {
         _timerStart.value = true
         timer = object : CountDownTimer(minutes, ONE_SECOND) {
             override fun onTick(millisUntilFinished: Long) {
                 val counterLong =
                     (((TWENTY_SECOND - millisUntilFinished).toFloat() / TWENTY_SECOND.toFloat()) * 100.0)
-                Log.d(TAG, "onTick: $counterLong")
 
                 _counter.value = counterLong.toInt()
-                Log.d(TAG, "onTick: ${counter.value}")
             }
 
             override fun onFinish() {
